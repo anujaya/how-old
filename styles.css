@@ -47,13 +47,24 @@ body {
 }
 
 .cat-half {
-  position: relative;       /* positioning context for the text overlay + (Phase 2) photo */
+  position: relative;       /* positioning context for the photo layer + text overlay */
   flex: 1 1 50%;
   min-width: 0;
   overflow: hidden;
   display: flex;            /* gives the overlay a sensible default centered spot */
   align-items: center;
   justify-content: center;
+  cursor: pointer;          /* tapping the half cycles its photo */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The background photo. Sits above the gradient (shown while a photo loads,
+   or if a cat has no photos yet) and below the text overlay. */
+.cat-photo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
 }
 
 /* Kiki — tuxedo: black "coat" up top fading into a white "belly" below. */
@@ -90,26 +101,34 @@ body {
 
 /* --- Text overlay ------------------------------------------------------- */
 /*
-  Absolutely positioned inside its half so that in Phase 2 it can be dragged
-  freely (and clamped) within the bounds of that half. Default: centered.
-  The frosted "sticker" card keeps the name/age readable no matter where it
-  sits on the two-tone background (and later, on a photo).
+  Absolutely positioned inside its half. Default: centered. Draggable via
+  app.js, which clamps it to stay within the bounds of its own half. The
+  frosted "sticker" card keeps the name/age readable over any photo.
 */
 .cat-info {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 1;
   width: max-content;
   max-width: 90%;
   text-align: center;
   padding: 1.4rem 2rem;
   user-select: none;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  touch-action: none;       /* let JS own all pointer movement while dragging */
+  cursor: grab;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 1.75rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.15s ease;
+}
+
+.cat-info.dragging {
+  cursor: grabbing;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 .cat-name {
