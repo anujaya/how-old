@@ -1,16 +1,25 @@
 /* ===========================================================================
-   Kawaii cat-age site — pastel pink & cream, no illustrations.
-   The cuteness comes from soft color, rounded type, and gentle spacing.
+   Kawaii cat-age site — no illustrations.
+   Each half is themed after its cat's real coloring:
+     Kiki   -> tuxedo cat  (black & white)
+     Knixie -> orange cat  (orange & white)
+   Cuteness comes from soft color, rounded type, gentle spacing, and a
+   frosted "sticker" card for the text so it stays readable on any background.
    =========================================================================== */
 
 :root {
   --cream: #fff6f0;
-  --blush: #ffb6c1;
-  --blush-deep: #ff8fab;
-  --pink-tint-a: #ffe4ec; /* left half soft tint  */
-  --pink-tint-b: #ffeef2; /* right half soft tint */
-  --text: #6b4a55;        /* soft warm brown, easier than pure black */
-  --text-soft: #a9788a;
+  --accent: #ff8fab; /* shared pink "collar bow" accent, ties the two halves together */
+
+  /* Kiki — tuxedo cat: soft black/charcoal fading to white */
+  --tux-dark: #2f2f33;
+  --tux-charcoal: #54545c;
+  --tux-white: #fdfdfd;
+
+  /* Knixie — orange cat: warm orange fading to cream white */
+  --tabby-orange: #ff9f45;
+  --tabby-deep: #f3741c;
+  --tabby-white: #fffaf3;
 }
 
 * {
@@ -26,7 +35,6 @@ body {
 
 body {
   font-family: "Baloo 2", "Quicksand", "Nunito", system-ui, -apple-system, sans-serif;
-  color: var(--text);
   background: var(--cream);
 }
 
@@ -49,12 +57,24 @@ body {
   justify-content: center;
 }
 
-/* Gentle two-tone so the two halves read as distinct, kawaii pastel tints. */
+/* Kiki — tuxedo: black "coat" up top fading into a white "belly" below. */
 .cat-half[data-cat-index="0"] {
-  background: linear-gradient(160deg, var(--pink-tint-a), #fff7fa);
+  background: linear-gradient(
+    165deg,
+    var(--tux-dark) 0%,
+    var(--tux-charcoal) 42%,
+    var(--tux-white) 100%
+  );
 }
+
+/* Knixie — orange tabby: warm orange fading into cream white. */
 .cat-half[data-cat-index="1"] {
-  background: linear-gradient(200deg, var(--pink-tint-b), #fffaf6);
+  background: linear-gradient(
+    200deg,
+    var(--tabby-orange) 0%,
+    var(--tabby-deep) 42%,
+    var(--tabby-white) 100%
+  );
 }
 
 /* Soft divider between the halves */
@@ -65,50 +85,70 @@ body {
   right: 0;
   height: 84%;
   width: 2px;
-  background: linear-gradient(var(--blush), transparent);
-  opacity: 0.5;
+  background: linear-gradient(rgba(255, 255, 255, 0.7), transparent);
+  opacity: 0.6;
 }
 
 /* --- Text overlay ------------------------------------------------------- */
 /*
   Absolutely positioned inside its half so that in Phase 2 it can be dragged
   freely (and clamped) within the bounds of that half. Default: centered.
+  The frosted "sticker" card keeps the name/age readable no matter where it
+  sits on the two-tone background (and later, on a photo).
 */
 .cat-info {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: max-content;
+  max-width: 90%;
   text-align: center;
-  padding: 1rem 1.5rem;
+  padding: 1.4rem 2rem;
   user-select: none;
-  /* soft scrim keeps text readable over Phase 2 photos */
-  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 1.75rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
 }
 
 .cat-name {
   margin: 0;
-  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-size: clamp(2.2rem, 6.5vw, 4.5rem);
   font-weight: 700;
-  color: var(--blush-deep);
   letter-spacing: 0.5px;
 }
 
 /* tasteful text-glyph heart accents — not an illustration */
 .cat-name::before {
   content: "♡ ";
-  color: var(--blush);
+  color: var(--accent);
 }
 .cat-name::after {
   content: " ♡";
-  color: var(--blush);
+  color: var(--accent);
 }
 
 .cat-age {
   margin: 0.4rem 0 0;
-  font-size: clamp(1.1rem, 2.6vw, 1.7rem);
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
   font-weight: 500;
-  color: var(--text-soft);
+}
+
+/* Per-cat text coloring, tuned for contrast on the frosted white card. */
+.cat-half[data-cat-index="0"] .cat-name {
+  color: var(--tux-dark);
+}
+.cat-half[data-cat-index="0"] .cat-age {
+  color: var(--tux-charcoal);
+}
+
+.cat-half[data-cat-index="1"] .cat-name {
+  color: var(--tabby-deep);
+}
+.cat-half[data-cat-index="1"] .cat-age {
+  color: #b15815;
 }
 
 /* --- Responsive: stack the halves vertically on narrow screens ---------- */
@@ -128,7 +168,7 @@ body {
     left: 8%;
     height: 2px;
     width: auto;
-    background: linear-gradient(90deg, transparent, var(--blush), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
   }
 }
 
