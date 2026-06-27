@@ -1,0 +1,141 @@
+/* ===========================================================================
+   Kawaii cat-age site — pastel pink & cream, no illustrations.
+   The cuteness comes from soft color, rounded type, and gentle spacing.
+   =========================================================================== */
+
+:root {
+  --cream: #fff6f0;
+  --blush: #ffb6c1;
+  --blush-deep: #ff8fab;
+  --pink-tint-a: #ffe4ec; /* left half soft tint  */
+  --pink-tint-b: #ffeef2; /* right half soft tint */
+  --text: #6b4a55;        /* soft warm brown, easier than pure black */
+  --text-soft: #a9788a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: "Baloo 2", "Quicksand", "Nunito", system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: var(--cream);
+}
+
+/* --- Two-half split layout ---------------------------------------------- */
+
+.split {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* better on mobile browsers */
+}
+
+.cat-half {
+  position: relative;       /* positioning context for the text overlay + (Phase 2) photo */
+  flex: 1 1 50%;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;            /* gives the overlay a sensible default centered spot */
+  align-items: center;
+  justify-content: center;
+}
+
+/* Gentle two-tone so the two halves read as distinct, kawaii pastel tints. */
+.cat-half[data-cat-index="0"] {
+  background: linear-gradient(160deg, var(--pink-tint-a), #fff7fa);
+}
+.cat-half[data-cat-index="1"] {
+  background: linear-gradient(200deg, var(--pink-tint-b), #fffaf6);
+}
+
+/* Soft divider between the halves */
+.cat-half[data-cat-index="0"]::after {
+  content: "";
+  position: absolute;
+  top: 8%;
+  right: 0;
+  height: 84%;
+  width: 2px;
+  background: linear-gradient(var(--blush), transparent);
+  opacity: 0.5;
+}
+
+/* --- Text overlay ------------------------------------------------------- */
+/*
+  Absolutely positioned inside its half so that in Phase 2 it can be dragged
+  freely (and clamped) within the bounds of that half. Default: centered.
+*/
+.cat-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 1rem 1.5rem;
+  user-select: none;
+  /* soft scrim keeps text readable over Phase 2 photos */
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.6);
+}
+
+.cat-name {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-weight: 700;
+  color: var(--blush-deep);
+  letter-spacing: 0.5px;
+}
+
+/* tasteful text-glyph heart accents — not an illustration */
+.cat-name::before {
+  content: "♡ ";
+  color: var(--blush);
+}
+.cat-name::after {
+  content: " ♡";
+  color: var(--blush);
+}
+
+.cat-age {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.1rem, 2.6vw, 1.7rem);
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+/* --- Responsive: stack the halves vertically on narrow screens ---------- */
+
+@media (max-width: 700px) {
+  .split {
+    flex-direction: column;
+  }
+  .cat-half {
+    flex: 1 1 50%;
+  }
+  /* divider goes horizontal when stacked */
+  .cat-half[data-cat-index="0"]::after {
+    top: auto;
+    bottom: 0;
+    right: 8%;
+    left: 8%;
+    height: 2px;
+    width: auto;
+    background: linear-gradient(90deg, transparent, var(--blush), transparent);
+  }
+}
+
+/* Respect reduced-motion for any future subtle animation */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

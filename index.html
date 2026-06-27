@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How Old Are They? ♡</title>
+  <meta name="description" content="A tiny page showing how old Kiki and Knixie are." />
+
+  <!-- Rounded, friendly kawaii typeface -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!--
+    Two-half split layout. Each .cat-half is a positioning context that holds a
+    .cat-info text overlay. In Phase 2 each half also gets a background photo, and
+    the .cat-info becomes draggable within the bounds of its own half.
+    The halves are populated by app.js from the CATS config.
+  -->
+  <main class="split" id="split">
+    <section class="cat-half" data-cat-index="0">
+      <div class="cat-info">
+        <h1 class="cat-name"></h1>
+        <p class="cat-age"></p>
+      </div>
+    </section>
+    <section class="cat-half" data-cat-index="1">
+      <div class="cat-info">
+        <h1 class="cat-name"></h1>
+        <p class="cat-age"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
