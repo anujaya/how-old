@@ -114,14 +114,14 @@ body {
   width: max-content;
   max-width: 90%;
   text-align: center;
-  padding: 1.4rem 2rem;
+  padding: 0.8rem 1.2rem;
   user-select: none;
   touch-action: none;       /* let JS own all pointer movement while dragging */
   cursor: grab;
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 1.75rem;
+  border-radius: 1.25rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
   transition: box-shadow 0.15s ease;
 }
@@ -133,14 +133,14 @@ body {
 
 .cat-name {
   margin: 0;
-  font-size: clamp(2.2rem, 6.5vw, 4.5rem);
+  font-size: clamp(1.7rem, 5vw, 3.4rem);
   font-weight: 700;
   letter-spacing: 0.5px;
 }
 
 .cat-age {
-  margin: 0.4rem 0 0;
-  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  margin: 0.25rem 0 0;
+  font-size: clamp(0.9rem, 1.9vw, 1.25rem);
   font-weight: 500;
 }
 
