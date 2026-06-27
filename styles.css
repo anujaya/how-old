@@ -9,7 +9,6 @@
 
 :root {
   --cream: #fff6f0;
-  --accent: #ff8fab; /* shared pink "collar bow" accent, ties the two halves together */
 
   /* Kiki — tuxedo cat: soft black/charcoal fading to white */
   --tux-dark: #2f2f33;
@@ -118,16 +117,6 @@ body {
   font-size: clamp(2.2rem, 6.5vw, 4.5rem);
   font-weight: 700;
   letter-spacing: 0.5px;
-}
-
-/* tasteful text-glyph heart accents — not an illustration */
-.cat-name::before {
-  content: "♡ ";
-  color: var(--accent);
-}
-.cat-name::after {
-  content: " ♡";
-  color: var(--accent);
 }
 
 .cat-age {
