@@ -13,14 +13,14 @@ Open `app.js` and edit the `CATS` config at the top:
 
 ```js
 const CATS = [
-  { name: "Kiki",   birthDate: "2019-06-15", photos: [] },
-  { name: "Knixie", birthDate: "2026-03-18", photos: [] },
+  { name: "Kiki",   birthDate: "2019-06-15", photos: ["images/kiki/kiki-1.jpg", ...] },
+  { name: "Knixie", birthDate: "2026-03-18", photos: ["images/knixie/knixie-1.jpg", ...] },
 ];
 ```
 
 - `name` — shown on screen.
 - `birthDate` — `"YYYY-MM-DD"`. Age is computed from this.
-- `photos` — reserved for Phase 2 (currently unused).
+- `photos` — array of image paths shown as that cat's background, tap-to-cycle.
 
 ### How age is displayed
 
@@ -48,8 +48,23 @@ The site is plain static files at the repo root, so GitHub Pages can serve it as
 
 (That one-time toggle has to be done in the GitHub UI — it can't be set from the code.)
 
-## Phase 2 (planned, not built yet)
+## Phase 2: photos
 
-- Each half gets a **background photo** of that cat.
-- **Tapping a photo** cycles to the next photo of the same cat (`photos` array).
-- The name + age **text overlay** becomes **draggable**, constrained to its own half.
+Each half shows a **background photo** of that cat, with the name/age card floating
+on top.
+
+- **Tap a half** (the photo or the card) to cycle to that cat's next photo. Add more
+  photos by dropping files in `images/<cat>/` and listing them in that cat's `photos`
+  array in `app.js`.
+- **Drag the name/age card** anywhere — it's clamped to stay within its own half and
+  always resets to the center on reload (position isn't saved).
+
+Before adding new photos to the repo, strip EXIF/GPS metadata and downsize them (this
+is a public site) — e.g. with Pillow:
+
+```python
+from PIL import Image, ImageOps
+img = ImageOps.exif_transpose(Image.open("raw.jpg")).convert("RGB")
+img.thumbnail((1600, 1600))
+img.save("images/<cat>/<cat>-N.jpg", quality=82, optimize=True)
+```
