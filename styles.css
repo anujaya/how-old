@@ -58,13 +58,22 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* The background photo. Sits above the gradient (shown while a photo loads,
-   or if a cat has no photos yet) and below the text overlay. */
+/* The background photo. Two of these are stacked per half so app.js can
+   crossfade between them (new photo fades in over the old one — never a
+   flash of the gradient underneath). Sits above the gradient (shown while
+   the first photo loads, or if a cat has no photos yet) and below the text
+   overlay. */
 .cat-photo {
   position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.cat-photo.is-visible {
+  opacity: 1;
 }
 
 /* Kiki — tuxedo: black "coat" up top fading into a white "belly" below. */

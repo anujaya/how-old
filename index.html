@@ -18,14 +18,17 @@
 </head>
 <body>
   <!--
-    Two-half split layout. Each .cat-half holds a .cat-photo background layer
-    (tap anywhere on the half to cycle to the next photo of that cat) and a
-    .cat-info text overlay (drag it around — it's clamped within its own half).
-    Populated and made interactive by app.js from the CATS config.
+    Two-half split layout. Each .cat-half holds two stacked .cat-photo layers
+    (tap anywhere on the half to crossfade to the next photo of that cat —
+    app.js fades between the two layers so there's never a gap showing the
+    background underneath) and a .cat-info text overlay (drag it around —
+    it's clamped within its own half). Populated and made interactive by
+    app.js from the CATS config.
   -->
   <main class="split" id="split">
     <section class="cat-half" data-cat-index="0">
       <div class="cat-photo" role="img"></div>
+      <div class="cat-photo" role="img" aria-hidden="true"></div>
       <div class="cat-info">
         <h1 class="cat-name"></h1>
         <p class="cat-age"></p>
@@ -33,6 +36,7 @@
     </section>
     <section class="cat-half" data-cat-index="1">
       <div class="cat-photo" role="img"></div>
+      <div class="cat-photo" role="img" aria-hidden="true"></div>
       <div class="cat-info">
         <h1 class="cat-name"></h1>
         <p class="cat-age"></p>

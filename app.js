@@ -105,20 +105,49 @@ function computeAge(birthDate, now = new Date()) {
  * to this half's own bounds).
  */
 function setupHalf(half, cat) {
-  const photoLayer = half.querySelector(".cat-photo");
+  const photoLayers = half.querySelectorAll(".cat-photo");
   const info = half.querySelector(".cat-info");
 
   half.querySelector(".cat-name").textContent = cat.name;
   half.querySelector(".cat-age").textContent = computeAge(cat.birthDate);
 
-  /* --- Tap-to-cycle photos ------------------------------------------- */
+  /* --- Tap-to-cycle photos, crossfaded --------------------------------- */
+  // Two stacked layers; we only ever paint a photo onto the hidden one and
+  // wait for it to fully decode before fading it in, so the gradient behind
+  // is never exposed mid-swap. Warm the browser's cache for every photo up
+  // front so later taps decode quickly too.
+  cat.photos.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+
   let photoIndex = 0;
+  let visibleLayer = photoLayers[0];
+
+  function preload(src) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => (img.decode ? img.decode().then(resolve, resolve) : resolve());
+      img.onerror = resolve;
+      img.src = src;
+    });
+  }
 
   function showPhoto(i) {
     if (cat.photos.length === 0) return;
-    photoIndex = ((i % cat.photos.length) + cat.photos.length) % cat.photos.length;
-    photoLayer.style.backgroundImage = `url("${cat.photos[photoIndex]}")`;
-    photoLayer.setAttribute("aria-label", `Photo of ${cat.name} (${photoIndex + 1} of ${cat.photos.length})`);
+    const nextIndex = ((i % cat.photos.length) + cat.photos.length) % cat.photos.length;
+    const src = cat.photos[nextIndex];
+    preload(src).then(() => {
+      const hiddenLayer = visibleLayer === photoLayers[0] ? photoLayers[1] : photoLayers[0];
+      hiddenLayer.style.backgroundImage = `url("${src}")`;
+      hiddenLayer.setAttribute("aria-label", `Photo of ${cat.name} (${nextIndex + 1} of ${cat.photos.length})`);
+      hiddenLayer.removeAttribute("aria-hidden");
+      hiddenLayer.classList.add("is-visible");
+      visibleLayer.classList.remove("is-visible");
+      visibleLayer.setAttribute("aria-hidden", "true");
+      visibleLayer = hiddenLayer;
+      photoIndex = nextIndex;
+    });
   }
   showPhoto(0);
 
