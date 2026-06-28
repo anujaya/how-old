@@ -100,6 +100,19 @@ function computeAge(birthDate, now = new Date()) {
 }
 
 /**
+ * Shuffle a copy of an array (Fisher-Yates). Used so each page load cycles
+ * a cat's photos in a fresh random order instead of always the same one.
+ */
+function shuffled(array) {
+  const result = array.slice();
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+/**
  * Wire up a single cat's half: render its name/age, show its first photo,
  * make the photo tap-to-cycle, and make the text overlay draggable (clamped
  * to this half's own bounds).
@@ -114,9 +127,11 @@ function setupHalf(half, cat) {
   /* --- Tap-to-cycle photos, crossfaded --------------------------------- */
   // Two stacked layers; we only ever paint a photo onto the hidden one and
   // wait for it to fully decode before fading it in, so the gradient behind
-  // is never exposed mid-swap. Warm the browser's cache for every photo up
-  // front so later taps decode quickly too.
-  cat.photos.forEach((src) => {
+  // is never exposed mid-swap. Cycle order is reshuffled on every page load.
+  // Warm the browser's cache for every photo up front so later taps decode
+  // quickly too.
+  const photos = shuffled(cat.photos);
+  photos.forEach((src) => {
     const img = new Image();
     img.src = src;
   });
@@ -134,13 +149,13 @@ function setupHalf(half, cat) {
   }
 
   function showPhoto(i) {
-    if (cat.photos.length === 0) return;
-    const nextIndex = ((i % cat.photos.length) + cat.photos.length) % cat.photos.length;
-    const src = cat.photos[nextIndex];
+    if (photos.length === 0) return;
+    const nextIndex = ((i % photos.length) + photos.length) % photos.length;
+    const src = photos[nextIndex];
     preload(src).then(() => {
       const hiddenLayer = visibleLayer === photoLayers[0] ? photoLayers[1] : photoLayers[0];
       hiddenLayer.style.backgroundImage = `url("${src}")`;
-      hiddenLayer.setAttribute("aria-label", `Photo of ${cat.name} (${nextIndex + 1} of ${cat.photos.length})`);
+      hiddenLayer.setAttribute("aria-label", `Photo of ${cat.name} (${nextIndex + 1} of ${photos.length})`);
       hiddenLayer.removeAttribute("aria-hidden");
       hiddenLayer.classList.add("is-visible");
       visibleLayer.classList.remove("is-visible");
