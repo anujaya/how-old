@@ -48,7 +48,6 @@ body {
 
 .cat-half {
   position: relative;       /* positioning context for the photo layer + text overlay */
-  flex: 1 1 50%;
   min-width: 0;
   overflow: hidden;
   display: flex;            /* gives the overlay a sensible default centered spot */
@@ -56,6 +55,19 @@ body {
   justify-content: center;
   cursor: pointer;          /* tapping the half cycles its photo */
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Split ratio lives in one CSS variable, set by app.js while dragging the
+   divider. flex-basis percentages are always relative to the *current*
+   main axis, so this single variable drives both the side-by-side desktop
+   layout and the stacked mobile one (flex-direction: column) with no
+   separate mobile variable needed. Kiki's half is the one with the
+   variable basis; Knixie's just grows to fill whatever's left. */
+.cat-half[data-cat-index="0"] {
+  flex: 0 0 var(--split, 50%);
+}
+.cat-half[data-cat-index="1"] {
+  flex: 1 1 auto;
 }
 
 /* The background photo. Two of these are stacked per half so app.js can
@@ -127,23 +139,38 @@ body {
   );
 }
 
-/* Soft divider between the halves — a tileable SVG wave, not a straight
-   line. The two tile SVGs (this one, and the rotated one in the mobile
-   media query below) are drawn so the tangent direction at the tile's
-   bottom/right edge matches the tangent at its top/left edge, so
-   background-repeat tiles them with no visible kink at the seam. */
-.cat-half[data-cat-index="0"]::after {
-  content: "";
+/* Draggable divider between the halves — a real element (not a pseudo-
+   element) so it can own its own pointer events without fighting the
+   half's tap-to-cycle-photo handler. It's absolutely positioned, centered
+   on the seam via the same --split variable that drives the halves'
+   flex-basis above, so it never takes layout space of its own and always
+   sits exactly at the boundary regardless of the current split or
+   viewport. Visually it's the same tileable SVG wave as before (the two
+   tile SVGs — this one, and the rotated one in the mobile media query
+   below — are drawn so the tangent direction at the tile's bottom/right
+   edge matches the tangent at its top/left edge, so background-repeat
+   tiles them with no visible kink at the seam). */
+.divider {
   position: absolute;
   top: 8%;
-  right: 0;
+  left: calc(var(--split, 50%) - 7px);
   height: 84%;
-  width: 10px;
+  width: 14px;
+  cursor: col-resize;
+  touch-action: none;       /* let JS own all pointer movement while dragging */
+  z-index: 2;                /* above both halves' photos and gradients */
   background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDEwIDIwIj48cGF0aCBkPSJNNSAwIFE5IDUgNSAxMCBRMSAxNSA1IDIwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
   background-repeat: repeat-y;
+  background-position: center top;
   background-size: 10px 20px;
   mask-image: linear-gradient(transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
   opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.divider:hover,
+.divider.dragging {
+  opacity: 1;
 }
 
 /* --- Text overlay ------------------------------------------------------- */
@@ -269,19 +296,19 @@ body {
   .split {
     flex-direction: column;
   }
-  .cat-half {
-    flex: 1 1 50%;
-  }
-  /* divider goes horizontal when stacked */
-  .cat-half[data-cat-index="0"]::after {
-    top: auto;
-    bottom: 0;
-    right: 8%;
+  /* divider goes horizontal when stacked, centered on the seam via the
+     same --split variable along the now-vertical main axis */
+  .divider {
+    top: calc(var(--split, 50%) - 7px);
     left: 8%;
-    height: 10px;
+    right: 8%;
+    bottom: auto;
+    height: 14px;
     width: auto;
+    cursor: row-resize;
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgdmlld0JveD0iMCAwIDIwIDEwIj48cGF0aCBkPSJNMCA1IFE1IDEgMTAgNSBRMTUgOSAyMCA1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
     background-repeat: repeat-x;
+    background-position: left center;
     background-size: 20px 10px;
     mask-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
   }

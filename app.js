@@ -340,11 +340,89 @@ function setupHalf(half, cat) {
   });
 }
 
+/**
+ * Wire up the draggable divider between the two halves: dragging it sets
+ * the --split CSS variable (read by both halves' flex-basis and the
+ * divider's own position in styles.css), so the photos' background-size:
+ * cover just naturally fills whatever space each half ends up with — no
+ * extra resize logic needed for the photos themselves.
+ */
+function setupDivider() {
+  const divider = document.getElementById("divider");
+  const split = document.getElementById("split");
+  if (!divider || !split) return;
+
+  const MIN_PERCENT = 15;
+  const MAX_PERCENT = 85;
+  let currentPercent = 50;
+  let dragging = false;
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function isStacked() {
+    return getComputedStyle(split).flexDirection === "column";
+  }
+
+  function percentFromPointer(e) {
+    const rect = split.getBoundingClientRect();
+    return isStacked()
+      ? ((e.clientY - rect.top) / rect.height) * 100
+      : ((e.clientX - rect.left) / rect.width) * 100;
+  }
+
+  function applyPercent(pct) {
+    currentPercent = clamp(pct, MIN_PERCENT, MAX_PERCENT);
+    split.style.setProperty("--split", `${currentPercent}%`);
+    // Reuses each half's existing resize listener (see setupHalf above) to
+    // re-clamp the draggable .cat-info card to the half's new live bounds.
+    window.dispatchEvent(new Event("resize"));
+  }
+
+  divider.addEventListener("pointerdown", (e) => {
+    divider.setPointerCapture(e.pointerId);
+    dragging = true;
+    divider.classList.add("dragging");
+    applyPercent(percentFromPointer(e));
+  });
+
+  divider.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    applyPercent(percentFromPointer(e));
+  });
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    divider.classList.remove("dragging");
+  }
+  divider.addEventListener("pointerup", endDrag);
+  divider.addEventListener("pointercancel", endDrag);
+
+  // Arrow keys nudge the split too, since the divider is focusable
+  // (role="separator" + tabindex) for keyboard/screen-reader users.
+  divider.addEventListener("keydown", (e) => {
+    const step = e.shiftKey ? 10 : 2;
+    const stacked = isStacked();
+    const decreaseKey = stacked ? "ArrowUp" : "ArrowLeft";
+    const increaseKey = stacked ? "ArrowDown" : "ArrowRight";
+    if (e.key === decreaseKey) {
+      applyPercent(currentPercent - step);
+      e.preventDefault();
+    } else if (e.key === increaseKey) {
+      applyPercent(currentPercent + step);
+      e.preventDefault();
+    }
+  });
+}
+
 function render() {
   document.querySelectorAll(".cat-half").forEach((half) => {
     const cat = CATS[Number(half.dataset.catIndex)];
     if (cat) setupHalf(half, cat);
   });
+  setupDivider();
 }
 
 document.addEventListener("DOMContentLoaded", render);
