@@ -96,16 +96,23 @@ body {
   );
 }
 
-/* Soft divider between the halves */
+/* Soft divider between the halves — a tileable SVG wave, not a straight
+   line. The two tile SVGs (this one, and the rotated one in the mobile
+   media query below) are drawn so the tangent direction at the tile's
+   bottom/right edge matches the tangent at its top/left edge, so
+   background-repeat tiles them with no visible kink at the seam. */
 .cat-half[data-cat-index="0"]::after {
   content: "";
   position: absolute;
   top: 8%;
   right: 0;
   height: 84%;
-  width: 2px;
-  background: linear-gradient(rgba(255, 255, 255, 0.7), transparent);
-  opacity: 0.6;
+  width: 10px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDEwIDIwIj48cGF0aCBkPSJNNSAwIFE5IDUgNSAxMCBRMSAxNSA1IDIwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
+  background-repeat: repeat-y;
+  background-size: 10px 20px;
+  mask-image: linear-gradient(transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
+  opacity: 0.75;
 }
 
 /* --- Text overlay ------------------------------------------------------- */
@@ -240,9 +247,12 @@ body {
     bottom: 0;
     right: 8%;
     left: 8%;
-    height: 2px;
+    height: 10px;
     width: auto;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgdmlld0JveD0iMCAwIDIwIDEwIj48cGF0aCBkPSJNMCA1IFE1IDEgMTAgNSBRMTUgOSAyMCA1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
+    background-repeat: repeat-x;
+    background-size: 20px 10px;
+    mask-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
   }
 }
 
