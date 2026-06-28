@@ -73,6 +73,33 @@ and hash. This means checking whether a newly uploaded photo is a duplicate
 of one already in the repo is a filename/hash lookup in `SOURCES.md`, not
 an image comparison.
 
+## Scalloped seam between the photos (`updateSeamClip` in `app.js`)
+
+The two photos are full-bleed and touch directly — there is no gap, no
+background color showing through, and no separate line drawn at the seam.
+The wavy border the user sees *is* each photo's own edge: `.cat-half` has
+no `overflow: hidden`, and `updateSeamClip()` sets an inline `clip-path:
+path(...)` on each half that traces a wave instead of a straight cut on
+whichever edge sits on the seam (right edge for Kiki/half 0, left edge for
+Knixie/half 1; top/bottom for the stacked mobile layout). Both halves
+trace the exact same `waveSegments()` curve, each from their own local
+origin, so they always interlock with zero gap and zero overlap — don't
+give them independently-tuned curves, or a gap (or overlap) will reappear.
+
+`#divider` is still a real element and still owns the drag, but it's
+**invisible** now (no `background-image`, no `mask-image`) — it exists
+purely as a hit target, sized generously around the seam so it's easy to
+grab even though there's nothing to see there. Don't add a visible line
+back to it; the squiggle is the photo boundary, not a decoration on top of
+it.
+
+`updateSeamClip()` re-reads each half's live `getBoundingClientRect()` and
+re-runs on: initial `render()`, and on every `resize` event. It doesn't
+need its own listener on the divider's drag — `setupDivider()`'s
+`applyPercent()` already dispatches a synthetic `resize` event on every
+drag move (to re-clamp `.cat-info`), and that's enough to keep the wave
+glued to the live seam position while dragging too.
+
 ## Draggable text card (`.cat-info`)
 
 Default look is centered via `top/left: 50%` + `transform: translate(-50%,

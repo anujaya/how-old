@@ -49,7 +49,6 @@ body {
 .cat-half {
   position: relative;       /* positioning context for the photo layer + text overlay */
   min-width: 0;
-  overflow: hidden;
   display: flex;            /* gives the overlay a sensible default centered spot */
   align-items: center;
   justify-content: center;
@@ -110,16 +109,14 @@ body {
 
 /* Draggable divider between the halves — a real element (not a pseudo-
    element) so it can own its own pointer events without fighting the
-   half's tap-to-cycle-photo handler. It's absolutely positioned, centered
-   on the seam via the same --split variable that drives the halves'
-   flex-basis above, so it never takes layout space of its own and always
-   sits exactly at the boundary regardless of the current split or
-   viewport. The photos themselves are full-bleed (no mask/recession), so
-   this single tileable SVG wave is the *only* squiggle drawn at the seam
-   — one shared border between the two images, not a per-photo cut. The
-   tile is drawn so the tangent direction at its bottom edge matches the
-   tangent at its top edge, so background-repeat tiles it with no visible
-   kink. */
+   half's tap-to-cycle-photo handler. It's invisible: the squiggly border
+   the user actually sees is each photo's own edge (clipped to a wave
+   shape by updateSeamClip() in app.js, with both halves tracing the same
+   curve so they meet with no gap and no overlap) — not anything drawn on
+   this element. This element only exists as a hit target for the drag,
+   absolutely positioned and centered on the seam via the same --split
+   variable that drives the halves' flex-basis above, so it always sits
+   exactly at the boundary regardless of the current split or viewport. */
 .divider {
   position: absolute;
   top: 8%;
@@ -129,18 +126,6 @@ body {
   cursor: col-resize;
   touch-action: none;       /* let JS own all pointer movement while dragging */
   z-index: 2;                /* above both halves' photos and gradients */
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDEwIDIwIj48cGF0aCBkPSJNNSAwIFE5IDUgNSAxMCBRMSAxNSA1IDIwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
-  background-repeat: repeat-y;
-  background-position: center top;
-  background-size: 10px 20px;
-  mask-image: linear-gradient(transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
-  opacity: 0.75;
-  transition: opacity 0.15s ease;
-}
-
-.divider:hover,
-.divider.dragging {
-  opacity: 1;
 }
 
 /* --- Text overlay ------------------------------------------------------- */
@@ -276,11 +261,6 @@ body {
     height: 14px;
     width: auto;
     cursor: row-resize;
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgdmlld0JveD0iMCAwIDIwIDEwIj48cGF0aCBkPSJNMCA1IFE1IDEgMTAgNSBRMTUgOSAyMCA1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
-    background-repeat: repeat-x;
-    background-position: left center;
-    background-size: 20px 10px;
-    mask-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
   }
 }
 
