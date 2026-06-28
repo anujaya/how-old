@@ -26,7 +26,6 @@ const CATS = [
     photos: [
       "images/knixie/knixie-1.jpg",
       "images/knixie/knixie-2.jpg",
-      "images/knixie/knixie-3.jpg",
       "images/knixie/knixie-4.jpg",
       "images/knixie/knixie-5.jpg",
     ],
