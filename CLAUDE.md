@@ -27,7 +27,7 @@ No other file needs to change to add/rename a cat or swap photos.
 Tiered display, recomputed fresh on every page load (never cached/stored):
 - under 6 months old → whole weeks (`"14 weeks"`)
 - 6–12 months old → whole months (`"8 months"`)
-- 1 year+ → years + months (`"6 years, 11 months"`)
+- 1 year+ → whole years, no months (`"6 years"`)
 
 `diffParts` does calendar-correct year/month/day math (borrows a day from the
 previous month / a month from the previous year as needed) rather than
@@ -108,6 +108,50 @@ what lets the transition's overshoot `cubic-bezier` actually render the row
 taller than its settled height for a moment — that overshoot *is* the
 "bloop." Don't swap it for a plain ease-in-out, and don't switch back to
 `max-height`/grid-rows — both were tried and don't bounce.
+
+**Bounce on both directions, not just expand.** `.cat-age` and
+`.cat-info.expanded .cat-age` declare *different* `transition` curves for
+the same `height`/`margin` properties — `.cat-age` (the rule that applies
+when `.expanded` is removed, i.e. collapsing) uses an "easeInBack" curve
+(`cubic-bezier(0.36, 0, 0.66, -0.56)`), while `.cat-info.expanded .cat-age`
+(expanding) uses "easeOutBack" (`cubic-bezier(0.34, 1.56, 0.64, 1)`). A
+single shared overshoot curve only bounces *above* its target, which is
+invisible when the target is 0 (height can't render negative) — hence two
+curves, one per direction, rather than one `transition` shared by both.
+The same asymmetric-curve pairing is used for `.cat-info`'s `width`
+transition, for the same reason.
+
+**Width also fit-to-content, not just height.** `.cat-info` keeps
+`width: max-content` in CSS, but `app.js`'s `measureWidths()` (in
+`setupHalf`) additionally drives an explicit inline `width` in px on setup,
+on every tap, and on resize: `name`'s natural width + padding when
+collapsed, or `max(name, age)` + padding when expanded. This mirrors the
+height technique and exists for the same root reason: intrinsic
+shrink-to-fit width in normal block layout reflects *all* children's
+natural widths regardless of a child's own `overflow`/height state, so
+without this the card would always be sized for the wider of name/age even
+while the age was collapsed to 0 height. `white-space: nowrap` on both
+`.cat-name` and `.cat-age` keeps these width measurements stable (a wrapped
+line would under-measure its own natural single-line width).
+
+Two gotchas this tripped on, both from forcing a layout read at the wrong
+moment (`measureWidths()`'s `naturalWidth()` helper reads `scrollWidth`,
+which always forces one):
+- Plain `el.scrollWidth` on `name`/`age` doesn't give their true natural
+  width — as ordinary block children with `width: auto` they stretch to
+  fill the card's *current* width, so `scrollWidth` only reports their own
+  text's width when that text happens to already be the wider of the two;
+  otherwise it reports the (unrelated) current card width instead.
+  `naturalWidth()` works around this by toggling the element's own
+  `display` to `inline-block` (which isn't subject to that stretch rule)
+  for the read, then restoring it.
+- `measureWidths()` must run, in full, *before* `age.style.height` and
+  `info.style.width` are set to their real new values in the tap/resize
+  handlers — not after, and not interleaved. Doing the forced-layout read
+  in between setting a property's old and new value breaks that property's
+  transition (confirmed: the bounce vanished and the value snapped
+  instantly). Measure everything first, then make the real changes in one
+  batch with no layout reads in between.
 
 ## CSS gotcha: don't remove `width: max-content` on `.cat-info`
 

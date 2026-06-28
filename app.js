@@ -85,7 +85,7 @@ function diffParts(birth, now) {
  * Format a cat's age using the tiered rule:
  *   - under 6 months old  -> whole weeks   ("14 weeks")
  *   - 6 to under 12 months -> whole months  ("8 months")
- *   - 1 year and older     -> years + months ("6 years, 11 months")
+ *   - 1 year and older     -> whole years   ("6 years")
  */
 function computeAge(birthDate, now = new Date()) {
   const birth = new Date(birthDate + "T00:00:00");
@@ -107,9 +107,9 @@ function computeAge(birthDate, now = new Date()) {
     return unit(months, "month"); // years is 0 here, so months is the full age
   }
 
-  // 1 year and older: "X years, Y months"
-  return `${unit(years, "year")}, ${unit(months, "month")}`;
-  // (note: `days` is intentionally unused in display, kept for clarity/future use)
+  // 1 year and older: whole years only.
+  return unit(years, "year");
+  // (note: `months`/`days` are intentionally unused in display, kept for clarity/future use)
 }
 
 /**
@@ -133,10 +133,59 @@ function shuffled(array) {
 function setupHalf(half, cat) {
   const photoLayers = half.querySelectorAll(".cat-photo");
   const info = half.querySelector(".cat-info");
+  const name = half.querySelector(".cat-name");
   const age = half.querySelector(".cat-age");
 
-  half.querySelector(".cat-name").textContent = cat.name;
+  name.textContent = cat.name;
   age.textContent = computeAge(cat.birthDate);
+
+  /* --- Width fit-to-content --------------------------------------------- *
+   * `.cat-info` is `width: max-content`, which always reflects the union of
+   * ALL children's natural widths — including the age line even while it's
+   * height-collapsed to 0, since shrink-to-fit sizing in normal block layout
+   * ignores a child's overflow/height state. So the card never actually
+   * narrows when the age is hidden unless we measure and drive it as an
+   * explicit pixel value ourselves, the same trick used for height above.
+   *
+   * A plain `el.scrollWidth` on `name`/`age` doesn't reliably give their true
+   * natural width either: as block children with `width: auto`, they stretch
+   * to fill the card's *current* content width, so `scrollWidth` only
+   * reflects their own text width when that text happens to be the wider of
+   * the two right now — otherwise it reports the card's current (unrelated)
+   * width instead. Temporarily switching to `display: inline-block` (which
+   * isn't subject to that stretch rule) gets the real number regardless of
+   * the card's current width.
+   *
+   * Also: never toggle `info.style.width` itself during measurement (e.g. to
+   * fall back to CSS `max-content` and read it back) — that forces a layout
+   * that lands a transition-eligible width change on `info` mid-function,
+   * which fights with the real width change made right after and kills the
+   * transition (verified: it snapped instantly with no bounce). Measuring
+   * via the children's own `display` instead never touches `info`'s width,
+   * so the only width change `info` sees in a tap is the final one below.
+   */
+  function naturalWidth(el) {
+    const priorDisplay = el.style.display;
+    el.style.display = "inline-block";
+    const width = el.scrollWidth;
+    el.style.display = priorDisplay;
+    return width;
+  }
+
+  function measureWidths() {
+    const paddingX =
+      parseFloat(getComputedStyle(info).paddingLeft) +
+      parseFloat(getComputedStyle(info).paddingRight);
+    const nameWidth = naturalWidth(name);
+    const ageWidth = naturalWidth(age);
+    return {
+      collapsed: nameWidth + paddingX,
+      expanded: Math.max(nameWidth, ageWidth) + paddingX,
+    };
+  }
+
+  // Start snug to just the name — the age starts hidden/collapsed.
+  info.style.width = `${measureWidths().collapsed}px`;
 
   /* --- Tap-to-cycle photos, crossfaded --------------------------------- */
   // Two stacked layers; we only ever paint a photo onto the hidden one and
@@ -256,21 +305,33 @@ function setupHalf(half, cat) {
       return;
     }
     const expanding = !info.classList.contains("expanded");
+    // Measure first: measureWidths() forces a layout (reading scrollWidth)
+    // and briefly toggles display on name/age to do it. Doing that *before*
+    // touching height/width below means the only changes those properties
+    // see in this tap are their real final ones — no transition-breaking
+    // layout sandwiched in between (confirmed by testing: interleaving the
+    // measurement after setting height/width made the bounce disappear).
+    const widths = measureWidths();
     // scrollHeight measures the age text's natural height even while it's
     // clipped to 0 by overflow:hidden, giving the transition a real target
     // to animate toward (and past, for the bounce) instead of "auto".
     age.style.height = expanding ? `${age.scrollHeight}px` : "0px";
+    info.style.width = `${expanding ? widths.expanded : widths.collapsed}px`;
     info.classList.toggle("expanded", expanding);
   });
 
   // Keep the overlay within bounds if the viewport is resized/rotated.
   window.addEventListener("resize", () => {
-    // Re-measure: the age text's height can change with viewport width
+    // Re-measure: the age text's height/width can change with viewport width
     // (font-size is clamp()'d to vw, and the card's max-width is a % of
-    // the half), so a stale fixed height would clip or leave a gap.
-    if (info.classList.contains("expanded")) {
+    // the half), so a stale fixed size would clip or leave a gap. Measure
+    // before mutating height/width, for the same reason as the tap handler.
+    const expanded = info.classList.contains("expanded");
+    const widths = measureWidths();
+    if (expanded) {
       age.style.height = `${age.scrollHeight}px`;
     }
+    info.style.width = `${expanded ? widths.expanded : widths.collapsed}px`;
     if (!info.dataset.pxPositioned) return;
     const maxLeft = Math.max(0, half.clientWidth - info.offsetWidth);
     const maxTop = Math.max(0, half.clientHeight - info.offsetHeight);
