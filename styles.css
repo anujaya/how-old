@@ -89,18 +89,23 @@ body {
 }
 
 /* Wavy die-cut edge at the seam: each half's photo recedes from its own
-   edge in a wave (matching the divider's wave period), revealing that
-   half's own themed gradient underneath in the notches — like a scalloped
-   sticker edge. Each cat's photo only ever recedes within its own box, so
-   this needs no overlap/duplication trick and tracks the seam automatically
-   if the split ratio ever changes (mask-position stays glued to the photo's
-   own edge regardless of how wide the half currently is). The mask tile is
-   absurdly wide/tall (4000px) on the non-repeating axis purely so it always
-   covers the full photo regardless of viewport size — that axis never
-   tiles, it's just "big enough to never run out." */
+   edge in a wave, revealing that half's own themed gradient underneath in
+   the notches — like a scalloped sticker edge. Both halves use the exact
+   same wave function (not mirrored) so the two photos recede in lockstep:
+   at any given point along the seam they pull back by the same amount,
+   keeping the combined sliver of visible background (white + orange)
+   tiny — averaging ~4px, never more than ~8px — instead of one side
+   ballooning out while the other pulls in. Each cat's photo only ever
+   recedes within its own box, so this needs no overlap/duplication trick
+   and tracks the seam automatically if the split ratio ever changes
+   (mask-position stays glued to the photo's own edge regardless of how
+   wide the half currently is). The mask tile is absurdly wide/tall
+   (4000px) on the non-repeating axis purely so it always covers the full
+   photo regardless of viewport size — that axis never tiles, it's just
+   "big enough to never run out." */
 .cat-half[data-cat-index="0"] .cat-photo {
-  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTM5ODQgMCBRMzk5MiA1IDM5ODQgMTAgUTM5NzYgMTUgMzk4NCAyMCBMMCAyMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
-  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTM5ODQgMCBRMzk5MiA1IDM5ODQgMTAgUTM5NzYgMTUgMzk4NCAyMCBMMCAyMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
+  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTM5OTggMCBRNDAwMCA1IDM5OTggMTAgUTM5OTYgMTUgMzk5OCAyMCBMMCAyMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
+  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTM5OTggMCBRNDAwMCA1IDM5OTggMTAgUTM5OTYgMTUgMzk5OCAyMCBMMCAyMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
   -webkit-mask-size: 4000px 20px;
   mask-size: 4000px 20px;
   -webkit-mask-repeat: repeat-y;
@@ -109,8 +114,8 @@ body {
   mask-position: right top;
 }
 .cat-half[data-cat-index="1"] .cat-photo {
-  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTE2IDAgUTI0IDUgMTYgMTAgUTggMTUgMTYgMjAgTDQwMDAgMjAgTDQwMDAgMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
-  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTE2IDAgUTI0IDUgMTYgMTAgUTggMTUgMTYgMjAgTDQwMDAgMjAgTDQwMDAgMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
+  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTIgMCBRMCA1IDIgMTAgUTQgMTUgMiAyMCBMNDAwMCAyMCBMNDAwMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
+  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTIgMCBRMCA1IDIgMTAgUTQgMTUgMiAyMCBMNDAwMCAyMCBMNDAwMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
   -webkit-mask-size: 4000px 20px;
   mask-size: 4000px 20px;
   -webkit-mask-repeat: repeat-y;
@@ -145,11 +150,10 @@ body {
    on the seam via the same --split variable that drives the halves'
    flex-basis above, so it never takes layout space of its own and always
    sits exactly at the boundary regardless of the current split or
-   viewport. Visually it's the same tileable SVG wave as before (the two
-   tile SVGs — this one, and the rotated one in the mobile media query
-   below — are drawn so the tangent direction at the tile's bottom/right
-   edge matches the tangent at its top/left edge, so background-repeat
-   tiles them with no visible kink at the seam). */
+   viewport. Purely an invisible hit-area now — the photo masks' own tight
+   matching wave (above) is the only visible seam decoration, so there's
+   no separate line graphic to draw here, just a wide-enough grab target
+   (col-resize cursor) centered on it. */
 .divider {
   position: absolute;
   top: 8%;
@@ -159,18 +163,6 @@ body {
   cursor: col-resize;
   touch-action: none;       /* let JS own all pointer movement while dragging */
   z-index: 2;                /* above both halves' photos and gradients */
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDEwIDIwIj48cGF0aCBkPSJNNSAwIFE5IDUgNSAxMCBRMSAxNSA1IDIwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
-  background-repeat: repeat-y;
-  background-position: center top;
-  background-size: 10px 20px;
-  mask-image: linear-gradient(transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
-  opacity: 0.75;
-  transition: opacity 0.15s ease;
-}
-
-.divider:hover,
-.divider.dragging {
-  opacity: 1;
 }
 
 /* --- Text overlay ------------------------------------------------------- */
@@ -306,17 +298,14 @@ body {
     height: 14px;
     width: auto;
     cursor: row-resize;
-    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIxMCIgdmlld0JveD0iMCAwIDIwIDEwIj48cGF0aCBkPSJNMCA1IFE1IDEgMTAgNSBRMTUgOSAyMCA1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4K");
-    background-repeat: repeat-x;
-    background-position: left center;
-    background-size: 20px 10px;
-    mask-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
   }
   /* photo wave-cut rotates 90° too: top half recedes along its bottom
-     edge, bottom half recedes along its top edge */
+     edge, bottom half recedes along its top edge. Same matched-pattern
+     logic as the desktop rule above — both use the identical wave so the
+     visible sliver between them stays tiny. */
   .cat-half[data-cat-index="0"] .cat-photo {
-    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMzk4NCBRNSAzOTkyIDEwIDM5ODQgUTE1IDM5NzYgMjAgMzk4NCBMMjAgMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
-    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMzk4NCBRNSAzOTkyIDEwIDM5ODQgUTE1IDM5NzYgMjAgMzk4NCBMMjAgMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMzk5OCBRNSA0MDAwIDEwIDM5OTggUTE1IDM5OTYgMjAgMzk5OCBMMjAgMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMzk5OCBRNSA0MDAwIDEwIDM5OTggUTE1IDM5OTYgMjAgMzk5OCBMMjAgMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
     -webkit-mask-size: 20px 4000px;
     mask-size: 20px 4000px;
     -webkit-mask-repeat: repeat-x;
@@ -325,8 +314,8 @@ body {
     mask-position: left bottom;
   }
   .cat-half[data-cat-index="1"] .cat-photo {
-    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMTYgUTUgMjQgMTAgMTYgUTE1IDggMjAgMTYgTDIwIDQwMDAgTDAgNDAwMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
-    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMTYgUTUgMjQgMTAgMTYgUTE1IDggMjAgMTYgTDIwIDQwMDAgTDAgNDAwMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMiBRNSAwIDEwIDIgUTE1IDQgMjAgMiBMMjAgNDAwMCBMMCA0MDAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMiBRNSAwIDEwIDIgUTE1IDQgMjAgMiBMMjAgNDAwMCBMMCA0MDAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=");
     -webkit-mask-size: 20px 4000px;
     mask-size: 20px 4000px;
     -webkit-mask-repeat: repeat-x;
