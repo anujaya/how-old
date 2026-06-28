@@ -133,9 +133,10 @@ function shuffled(array) {
 function setupHalf(half, cat) {
   const photoLayers = half.querySelectorAll(".cat-photo");
   const info = half.querySelector(".cat-info");
+  const age = half.querySelector(".cat-age");
 
   half.querySelector(".cat-name").textContent = cat.name;
-  half.querySelector(".cat-age").textContent = computeAge(cat.birthDate);
+  age.textContent = computeAge(cat.birthDate);
 
   /* --- Tap-to-cycle photos, crossfaded --------------------------------- */
   // Two stacked layers; we only ever paint a photo onto the hidden one and
@@ -179,8 +180,8 @@ function setupHalf(half, cat) {
   }
   showPhoto(0);
 
-  // A click anywhere in the half — including one that bubbles up from a tap
-  // (not a drag) on the text overlay — advances to the next photo.
+  // A click on the bare photo (not the text card, which stops propagation
+  // to handle its own tap-to-reveal-age behavior) advances to the next photo.
   half.addEventListener("click", () => showPhoto(photoIndex + 1));
 
   /* --- Draggable text overlay, clamped to this half ------------------- */
@@ -243,17 +244,33 @@ function setupHalf(half, cat) {
   info.addEventListener("pointerup", endDrag);
   info.addEventListener("pointercancel", endDrag);
 
-  // A drag's pointerup is followed by a click on .cat-info; swallow that one
-  // click so finishing a drag doesn't also cycle the photo underneath.
+  // Tapping the card reveals/hides the age (see the .expanded rules in
+  // styles.css); it never bubbles to the half's click handler, so tapping
+  // the card doesn't also cycle the photo underneath. A drag's pointerup is
+  // followed by a synthetic click here too — swallow that one so finishing
+  // a drag doesn't also toggle the age.
   info.addEventListener("click", (e) => {
+    e.stopPropagation();
     if (suppressNextClick) {
-      e.stopPropagation();
       suppressNextClick = false;
+      return;
     }
+    const expanding = !info.classList.contains("expanded");
+    // scrollHeight measures the age text's natural height even while it's
+    // clipped to 0 by overflow:hidden, giving the transition a real target
+    // to animate toward (and past, for the bounce) instead of "auto".
+    age.style.height = expanding ? `${age.scrollHeight}px` : "0px";
+    info.classList.toggle("expanded", expanding);
   });
 
   // Keep the overlay within bounds if the viewport is resized/rotated.
   window.addEventListener("resize", () => {
+    // Re-measure: the age text's height can change with viewport width
+    // (font-size is clamp()'d to vw, and the card's max-width is a % of
+    // the half), so a stale fixed height would clip or leave a gap.
+    if (info.classList.contains("expanded")) {
+      age.style.height = `${age.scrollHeight}px`;
+    }
     if (!info.dataset.pxPositioned) return;
     const maxLeft = Math.max(0, half.clientWidth - info.offsetWidth);
     const maxTop = Math.max(0, half.clientHeight - info.offsetHeight);

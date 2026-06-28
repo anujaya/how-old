@@ -47,9 +47,11 @@ swapping `background-image` on a single layer — that's what caused the
 flash this was built to fix. All of a cat's photos are also warmed into the
 browser cache on setup so later taps decode quickly.
 
-Tapping anywhere in a half (the bare photo or the text card) cycles to that
-cat's next photo, independently per half — there's a single `click` listener
-on `.cat-half` that catches bubbled clicks from either region.
+Tapping the bare photo (anywhere in a half outside the text card) cycles to
+that cat's next photo, independently per half — there's a single `click`
+listener on `.cat-half` for this. The text card has its own tap behavior
+(see below) and stops the click from bubbling up to this handler, so tapping
+the card never also cycles the photo.
 
 **Adding new photos:** raw phone photos carry EXIF/GPS metadata and are
 several MB — strip and downsize before committing, since this is a public
@@ -83,10 +85,29 @@ half or cross into the other cat's side.
 Tap vs. drag is disambiguated with a 6px movement threshold
 (`DRAG_THRESHOLD`): crossing it marks the gesture a drag, and on
 `pointerup` the next synthetic `click` on the card is swallowed
-(`suppressNextClick` / `stopPropagation`) so finishing a drag doesn't also
-trigger the photo-cycle handler. Position is **intentionally not
-persisted** — it always resets to center on reload. Don't add
-`localStorage` for this; it was explicitly decided against.
+(`suppressNextClick`) so finishing a drag doesn't also toggle the age
+reveal below. Position is **intentionally not persisted** — it always
+resets to center on reload. Don't add `localStorage` for this; it was
+explicitly decided against.
+
+## Tap-to-reveal age (`.cat-info.expanded`)
+
+The age is hidden by default; a plain tap (not a drag) on the text card
+toggles the `expanded` class on `.cat-info`. The card's `click` handler
+always calls `stopPropagation()` so this tap never also bubbles into the
+half's photo-cycle handler above.
+
+The open/close animates a literal pixel `height` on `.cat-age`, set in
+`app.js` from `age.scrollHeight` at the moment of the tap — not `max-height`
+and not "auto". `scrollHeight` reports the text's true height even while
+it's currently clipped to 0 by `overflow: hidden`, so there's no hardcoded
+height to keep in sync with font size or text length. Animating a real
+`height` (rather than `max-height`, or a grid-row `fr` track, both of which
+get capped at the content's own natural size in an auto-sized container) is
+what lets the transition's overshoot `cubic-bezier` actually render the row
+taller than its settled height for a moment — that overshoot *is* the
+"bloop." Don't swap it for a plain ease-in-out, and don't switch back to
+`max-height`/grid-rows — both were tried and don't bounce.
 
 ## CSS gotcha: don't remove `width: max-content` on `.cat-info`
 

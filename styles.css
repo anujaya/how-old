@@ -122,14 +122,14 @@ body {
   z-index: 1;
   width: max-content;
   max-width: 90%;
-  text-align: center;
+  text-align: left;
   padding: 0.45rem 0.75rem;
   user-select: none;
   touch-action: none;       /* let JS own all pointer movement while dragging */
   cursor: grab;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 1.25rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
   transition: box-shadow 0.15s ease;
@@ -143,15 +143,33 @@ body {
 
 .cat-name {
   margin: 0;
-  font-size: clamp(1.7rem, 5vw, 3.4rem);
+  font-size: clamp(1.25rem, 3.5vw, 2.4rem);
   font-weight: 700;
   letter-spacing: 0.5px;
 }
 
+/* Hidden by default; tapping the card (app.js) sets an explicit pixel
+   `height` (measured from `scrollHeight`, since the natural content height
+   varies with text length/viewport) and toggles `.expanded` on `.cat-info`.
+   Animating a literal `height` (not `max-height` or a grid-row fr track)
+   is what lets the cubic-bezier's overshoot actually render the row taller
+   than its settled height for a moment — that overshoot is the "bloop". */
 .cat-age {
-  margin: 0.1rem 0 0;
+  height: 0;
+  overflow: hidden;
+  margin: 0;
+  opacity: 0;
   font-size: clamp(0.9rem, 1.9vw, 1.25rem);
   font-weight: 500;
+  transition:
+    height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    margin 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease;
+}
+
+.cat-info.expanded .cat-age {
+  margin: 0.1rem 0 0;
+  opacity: 1;
 }
 
 /* A subtle wiggle on load hints that the card can be dragged. Composed with
