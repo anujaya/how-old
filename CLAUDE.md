@@ -63,6 +63,14 @@ img.save("images/<cat>/<cat>-N.jpg", quality=82, optimize=True)
 ```
 (Saving without passing `exif=` drops the metadata.)
 
+Repo files keep the existing `<cat>-N.jpg` numbering — don't rename them to
+the original upload filename. Instead, before processing, hash the
+*original* file (`sha256sum raw.jpg`) and append a row to
+`images/SOURCES.md` mapping the new repo filename to that original filename
+and hash. This means checking whether a newly uploaded photo is a duplicate
+of one already in the repo is a filename/hash lookup in `SOURCES.md`, not
+an image comparison.
+
 ## Draggable text card (`.cat-info`)
 
 Default look is centered via `top/left: 50%` + `transform: translate(-50%,
