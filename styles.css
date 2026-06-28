@@ -76,6 +76,37 @@ body {
   opacity: 1;
 }
 
+/* Wavy die-cut edge at the seam: each half's photo recedes from its own
+   edge in a wave (matching the divider's wave period), revealing that
+   half's own themed gradient underneath in the notches — like a scalloped
+   sticker edge. Each cat's photo only ever recedes within its own box, so
+   this needs no overlap/duplication trick and tracks the seam automatically
+   if the split ratio ever changes (mask-position stays glued to the photo's
+   own edge regardless of how wide the half currently is). The mask tile is
+   absurdly wide/tall (4000px) on the non-repeating axis purely so it always
+   covers the full photo regardless of viewport size — that axis never
+   tiles, it's just "big enough to never run out." */
+.cat-half[data-cat-index="0"] .cat-photo {
+  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTM5ODQgMCBRMzk5MiA1IDM5ODQgMTAgUTM5NzYgMTUgMzk4NCAyMCBMMCAyMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
+  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTM5ODQgMCBRMzk5MiA1IDM5ODQgMTAgUTM5NzYgMTUgMzk4NCAyMCBMMCAyMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
+  -webkit-mask-size: 4000px 20px;
+  mask-size: 4000px 20px;
+  -webkit-mask-repeat: repeat-y;
+  mask-repeat: repeat-y;
+  -webkit-mask-position: right top;
+  mask-position: right top;
+}
+.cat-half[data-cat-index="1"] .cat-photo {
+  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTE2IDAgUTI0IDUgMTYgMTAgUTggMTUgMTYgMjAgTDQwMDAgMjAgTDQwMDAgMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
+  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAwIiBoZWlnaHQ9IjIwIiB2aWV3Qm94PSIwIDAgNDAwMCAyMCI+PHBhdGggZD0iTTE2IDAgUTI0IDUgMTYgMTAgUTggMTUgMTYgMjAgTDQwMDAgMjAgTDQwMDAgMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
+  -webkit-mask-size: 4000px 20px;
+  mask-size: 4000px 20px;
+  -webkit-mask-repeat: repeat-y;
+  mask-repeat: repeat-y;
+  -webkit-mask-position: left top;
+  mask-position: left top;
+}
+
 /* Kiki — tuxedo: black "coat" up top fading into a white "belly" below. */
 .cat-half[data-cat-index="0"] {
   background: linear-gradient(
@@ -253,6 +284,28 @@ body {
     background-repeat: repeat-x;
     background-size: 20px 10px;
     mask-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.7) 15%, rgba(0, 0, 0, 0.7) 85%, transparent);
+  }
+  /* photo wave-cut rotates 90° too: top half recedes along its bottom
+     edge, bottom half recedes along its top edge */
+  .cat-half[data-cat-index="0"] .cat-photo {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMzk4NCBRNSAzOTkyIDEwIDM5ODQgUTE1IDM5NzYgMjAgMzk4NCBMMjAgMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMzk4NCBRNSAzOTkyIDEwIDM5ODQgUTE1IDM5NzYgMjAgMzk4NCBMMjAgMCBMMCAwIFoiIGZpbGw9IiNmZmYiLz48L3N2Zz4K");
+    -webkit-mask-size: 20px 4000px;
+    mask-size: 20px 4000px;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    -webkit-mask-position: left bottom;
+    mask-position: left bottom;
+  }
+  .cat-half[data-cat-index="1"] .cat-photo {
+    -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMTYgUTUgMjQgMTAgMTYgUTE1IDggMjAgMTYgTDIwIDQwMDAgTDAgNDAwMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0MDAwIiB2aWV3Qm94PSIwIDAgMjAgNDAwMCI+PHBhdGggZD0iTTAgMTYgUTUgMjQgMTAgMTYgUTE1IDggMjAgMTYgTDIwIDQwMDAgTDAgNDAwMCBaIiBmaWxsPSIjZmZmIi8+PC9zdmc+Cg==");
+    -webkit-mask-size: 20px 4000px;
+    mask-size: 20px 4000px;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    -webkit-mask-position: left top;
+    mask-position: left top;
   }
 }
 
