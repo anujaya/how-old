@@ -1,11 +1,12 @@
 # how-old ♡
 
-A tiny kawaii website that shows how old my two cats are. The only thing on the
-screen is each cat's name and their current age — auto-calculated from their birth
-date, so it's never stale.
+A tiny kawaii website that shows how old my two cats are. Each cat's age is
+auto-calculated from their birth date, so it's never stale.
 
 Live structure: a split screen, one half per cat (side-by-side on desktop, stacked
-on mobile).
+on mobile), each half showing a background photo of that cat with a draggable
+name card floating on top. The card shows just the name by default — tap it to
+reveal the age underneath.
 
 ## Editing the cats
 
@@ -44,11 +45,13 @@ The site is plain static files at the repo root, so GitHub Pages can serve it as
 2. In the repo: **Settings → Pages**.
 3. Under **Source**, choose **Deploy from a branch**, pick the branch and the `/ (root)`
    folder, and save.
-4. It will publish at `https://anujaya.github.io/how-old/`.
+4. It will publish at `https://anujaya.github.io/meow/` (the repo was renamed from
+   `how-old` to `meow`; GitHub redirects the old clone URL, but Pages URLs follow the
+   current repo name).
 
 (That one-time toggle has to be done in the GitHub UI — it can't be set from the code.)
 
-## Phase 2: photos
+## Photos
 
 Each half shows a **background photo** of that cat, with the name/age card floating
 on top.
