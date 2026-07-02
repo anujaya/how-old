@@ -73,6 +73,13 @@ and hash. This means checking whether a newly uploaded photo is a duplicate
 of one already in the repo is a filename/hash lookup in `SOURCES.md`, not
 an image comparison.
 
+New photos are added manually, by uploading them in a Claude Code session
+and having them processed with the pipeline above. This was a deliberate
+choice: an automated ingestion pipeline (Google Photos API → Drive → local
+ML classification for people/screens/documents → approval queue) was
+scoped out and explicitly rejected as too much complexity for what this
+site needs. Don't build one unless asked again.
+
 ## Scalloped seam between the photos (`updateSeamClip` in `app.js`)
 
 The two photos are full-bleed and touch directly — there is no gap, no
