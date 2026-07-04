@@ -45,3 +45,11 @@ When adding a new photo (see CLAUDE.md's "Adding new photos" section):
 | knixie-2.jpg    | unknown / predates this log   | — |
 | knixie-4.jpg    | unknown / predates this log   | — |
 | knixie-5.jpg    | unknown / predates this log   | — |
+| knixie-6.jpg    | 1000016894.jpg                 | 66c230e339732e4ef6d3182d297b8fd31ae985a32fdf005d8502e2c94fbf06f6 |
+| knixie-7.jpg    | 1000016830.jpg                 | b6cc51ce3c51dd9d67b74b70d4393ee4c498bc70fc72fb9e12f9283781bcbe92 |
+| knixie-8.jpg    | 1000016786.jpg                 | 227559cff5cdf252340303955cf4aeb43aa1ad76651cec8f2100d426bc31affa |
+| knixie-9.jpg    | 1000016779.jpg                 | d5f5545a38b0c1621399820a138caf51a36532f25c20ce717c4dda8ba97190ca |
+| knixie-10.jpg   | 1000016777.jpg                 | 2006eb907bee99f39eab6eb1750004c9c77e05194ef163437f48497811652479 |
+| knixie-11.jpg   | 1000016778.jpg                 | 50d8ba8645ad8c393aee44695d927d2f927ed3cf42157d2ea26ffbbfbd1bd891 |
+| knixie-12.jpg   | 1000016770.jpg                 | 713f850dd020e7a7cb995fc4d170cdf275d5c0d4b19284725a4e9ca8a8a58452 |
+| knixie-13.jpg   | 1000016682.jpg                 | dfc2f8d2a417547c846ff3212ffee8820dd7a13f3c026e77384d702301513d06 |
