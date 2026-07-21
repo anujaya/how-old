@@ -50,6 +50,9 @@ const CATS = [
       "images/knixie/knixie-11.jpg",
       "images/knixie/knixie-12.jpg",
       "images/knixie/knixie-13.jpg",
+      "images/knixie/knixie-14.jpg",
+      "images/knixie/knixie-15.jpg",
+      "images/knixie/knixie-16.jpg",
     ],
   },
 ];
