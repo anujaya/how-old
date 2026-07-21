@@ -56,3 +56,6 @@ When adding a new photo (see CLAUDE.md's "Adding new photos" section):
 | knixie-14.jpg   | 1000023565.jpg                 | dff6a7ad6e98b96cd3fd294231886f9f5b9dec0928771327c8a21561165a707d |
 | knixie-15.jpg   | 1000023546.jpg                 | 139b33410d3f68d5edb8a69304fbf95b5ffe858a735d87f37ab1227812ad02e5 |
 | knixie-16.jpg   | 1000023433.jpg                 | 1ea8a2131e145bae5fb8f1336d8a99c800a1e7b45f6ffc4836e185f3aa37a735 |
+| knixie-17.jpg   | 1000016455.jpg                 | 0fc5648623c39d6fd2a786cec44d62d5a49a4b8bf6b24bc46f7cd2bf86c805e8 |
+| knixie-18.jpg   | 1000016189.jpg                 | 23f91e28be65b7c4d02e07e345960680e2c77053ee205c0d696f1e906ba8460e |
+| knixie-19.jpg   | 1000016173.jpg                 | 4da50a1bf9bd061cf83eda0d43c2bab63b8402e19c86a8fab0be624c69d11146 |
