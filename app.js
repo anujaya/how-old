@@ -261,8 +261,8 @@ function setupHalf(half, cat) {
     const infoRect = info.getBoundingClientRect();
     info.style.left = `${infoRect.left - halfRect.left}px`;
     info.style.top = `${infoRect.top - halfRect.top}px`;
-    info.style.right = '';
-    info.style.bottom = '';
+    info.style.right = 'auto';
+    info.style.bottom = 'auto';
     info.style.transform = "none";
     info.dataset.pxPositioned = "true";
   }
