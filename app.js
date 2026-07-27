@@ -252,15 +252,17 @@ function setupHalf(half, cat) {
     return Math.min(Math.max(value, min), max);
   }
 
-  // The default look centers .cat-info via top/left 50% + a transform. The
-  // first time it's dragged, pin that same visual position down as explicit
-  // pixel left/top so plain arithmetic + clamping can take over from there.
+  // Cards start in their CSS-defined corner (top-left for Kiki, bottom-right
+  // for Knixie). On first drag, lock down the visual position as explicit
+  // top/left pixels so plain arithmetic + clamping can take over from there.
   function switchToPixelPositioning() {
     if (info.dataset.pxPositioned) return;
     const halfRect = half.getBoundingClientRect();
     const infoRect = info.getBoundingClientRect();
     info.style.left = `${infoRect.left - halfRect.left}px`;
     info.style.top = `${infoRect.top - halfRect.top}px`;
+    info.style.right = '';
+    info.style.bottom = '';
     info.style.transform = "none";
     info.dataset.pxPositioned = "true";
   }
@@ -425,90 +427,12 @@ function setupDivider() {
   });
 }
 
-/**
- * The visible border between the two photos isn't a line drawn on top of
- * them — it's the photos' own edges, each clipped to a wave instead of a
- * straight cut. Both halves trace the *same* wave (each from their own
- * local origin), so they meet with no gap and no overlap.
- */
-const SEAM_WAVE_PERIOD = 56; // px, measured along the seam
-const SEAM_WAVE_PEAK = 14; // px, max deviation from the straight boundary
-
-// Quadratic-bezier control/end points for a wave that oscillates between
-// +peak and -peak every half period, covering 0..total.
-function waveSegments(total) {
-  const half = SEAM_WAVE_PERIOD / 2;
-  const segments = [];
-  let sign = 1;
-  for (let t = 0; t < total; t += half) {
-    segments.push({
-      ctrlT: t + half / 2,
-      ctrlDev: sign * SEAM_WAVE_PEAK * 2, // a quadratic's midpoint sits at half its control point's deviation
-      endT: Math.min(t + half, total),
-    });
-    sign *= -1;
-  }
-  return segments;
-}
-
-// Closed path covering one half's own width x height box, but with
-// whichever edge sits on the seam (right edge if seamOnRight, else left)
-// replaced by the wave.
-function verticalHalfClip(width, height, seamOnRight) {
-  const edge = seamOnRight ? width : 0;
-  const outerX = seamOnRight ? 0 : width;
-  let d = seamOnRight ? `M 0 0 L ${edge} 0` : `M ${width} 0 L ${edge} 0`;
-  for (const s of waveSegments(height)) {
-    d += ` Q ${edge + s.ctrlDev} ${s.ctrlT} ${edge} ${s.endT}`;
-  }
-  d += ` L ${outerX} ${height} Z`;
-  return d;
-}
-
-// Same idea, but the seam edge is the bottom edge (seamOnBottom) or the
-// top edge, for the stacked mobile layout.
-function horizontalHalfClip(width, height, seamOnBottom) {
-  const edge = seamOnBottom ? height : 0;
-  const outerY = seamOnBottom ? 0 : height;
-  let d = seamOnBottom ? `M 0 0 L 0 ${edge}` : `M 0 ${height} L 0 ${edge}`;
-  for (const s of waveSegments(width)) {
-    d += ` Q ${s.ctrlT} ${edge + s.ctrlDev} ${s.endT} ${edge}`;
-  }
-  d += ` L ${width} ${outerY} Z`;
-  return d;
-}
-
-function updateSeamClip() {
-  const split = document.getElementById("split");
-  const half0 = document.querySelector('.cat-half[data-cat-index="0"]');
-  const half1 = document.querySelector('.cat-half[data-cat-index="1"]');
-  if (!split || !half0 || !half1) return;
-
-  const stacked = getComputedStyle(split).flexDirection === "column";
-  const r0 = half0.getBoundingClientRect();
-  const r1 = half1.getBoundingClientRect();
-
-  if (stacked) {
-    half0.style.clipPath = `path('${horizontalHalfClip(r0.width, r0.height, true)}')`;
-    half1.style.clipPath = `path('${horizontalHalfClip(r1.width, r1.height, false)}')`;
-  } else {
-    half0.style.clipPath = `path('${verticalHalfClip(r0.width, r0.height, true)}')`;
-    half1.style.clipPath = `path('${verticalHalfClip(r1.width, r1.height, false)}')`;
-  }
-}
-
 function render() {
   document.querySelectorAll(".cat-half").forEach((half) => {
     const cat = CATS[Number(half.dataset.catIndex)];
     if (cat) setupHalf(half, cat);
   });
   setupDivider();
-  updateSeamClip();
-  // The divider's drag handler already dispatches a synthetic resize event
-  // on every move (see applyPercent in setupDivider above) to re-clamp the
-  // text overlay, so listening here also keeps the wave glued to the live
-  // seam position while dragging, with no extra wiring.
-  window.addEventListener("resize", updateSeamClip);
 }
 
 document.addEventListener("DOMContentLoaded", render);

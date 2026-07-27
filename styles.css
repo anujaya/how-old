@@ -1,10 +1,5 @@
 /* ===========================================================================
-   Kawaii cat-age site — no illustrations.
-   Each half is themed after its cat's real coloring:
-     Kiki   -> tuxedo cat  (black & white)
-     Knixie -> orange cat  (orange & white)
-   Cuteness comes from soft color, rounded type, gentle spacing, and a
-   frosted "sticker" card for the text so it stays readable on any background.
+   Cat age site — Windows 95 retro style.
    =========================================================================== */
 
 :root {
@@ -33,7 +28,7 @@ body {
 }
 
 body {
-  font-family: "Baloo 2", "Quicksand", "Nunito", system-ui, -apple-system, sans-serif;
+  font-family: "Noto Sans", system-ui, -apple-system, sans-serif;
   background: var(--cream);
 }
 
@@ -41,27 +36,20 @@ body {
 
 .split {
   display: flex;
+  position: relative;
   width: 100vw;
   height: 100vh;
-  height: 100dvh; /* better on mobile browsers */
+  height: 100dvh;
 }
 
 .cat-half {
-  position: relative;       /* positioning context for the photo layer + text overlay */
+  position: relative;
   min-width: 0;
-  display: flex;            /* gives the overlay a sensible default centered spot */
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;          /* tapping the half cycles its photo */
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Split ratio lives in one CSS variable, set by app.js while dragging the
-   divider. flex-basis percentages are always relative to the *current*
-   main axis, so this single variable drives both the side-by-side desktop
-   layout and the stacked mobile one (flex-direction: column) with no
-   separate mobile variable needed. Kiki's half is the one with the
-   variable basis; Knixie's just grows to fill whatever's left. */
+/* Split ratio lives in one CSS variable, set by app.js while dragging. */
 .cat-half[data-cat-index="0"] {
   flex: 0 0 var(--split, 50%);
 }
@@ -69,11 +57,7 @@ body {
   flex: 1 1 auto;
 }
 
-/* The background photo. Two of these are stacked per half so app.js can
-   crossfade between them (new photo fades in over the old one — never a
-   flash of the gradient underneath). Sits above the gradient (shown while
-   the first photo loads, or if a cat has no photos yet) and below the text
-   overlay. */
+/* Two stacked photo layers per half — app.js crossfades between them. */
 .cat-photo {
   position: absolute;
   inset: 0;
@@ -87,7 +71,7 @@ body {
   opacity: 1;
 }
 
-/* Kiki — tuxedo: black "coat" up top fading into a white "belly" below. */
+/* Kiki — tuxedo: black fading to white */
 .cat-half[data-cat-index="0"] {
   background: linear-gradient(
     165deg,
@@ -97,7 +81,7 @@ body {
   );
 }
 
-/* Knixie — orange tabby: warm orange fading into cream white. */
+/* Knixie — orange tabby: warm orange fading to cream */
 .cat-half[data-cat-index="1"] {
   background: linear-gradient(
     200deg,
@@ -107,69 +91,97 @@ body {
   );
 }
 
-/* Draggable divider between the halves — a real element (not a pseudo-
-   element) so it can own its own pointer events without fighting the
-   half's tap-to-cycle-photo handler. It's invisible: the squiggly border
-   the user actually sees is each photo's own edge (clipped to a wave
-   shape by updateSeamClip() in app.js, with both halves tracing the same
-   curve so they meet with no gap and no overlap) — not anything drawn on
-   this element. This element only exists as a hit target for the drag,
-   absolutely positioned and centered on the seam via the same --split
-   variable that drives the halves' flex-basis above, so it always sits
-   exactly at the boundary regardless of the current split or viewport. */
+/* Draggable divider — a simple 2px black line with a translucent W95 handle.
+   The element itself is an invisible hit target; the visuals are pseudo-elements. */
 .divider {
   position: absolute;
-  top: 8%;
-  left: calc(var(--split, 50%) - 7px);
-  height: 84%;
-  width: 14px;
+  top: 0;
+  left: calc(var(--split, 50%) - 10px);
+  height: 100%;
+  width: 20px;
   cursor: col-resize;
-  touch-action: none;       /* let JS own all pointer movement while dragging */
-  z-index: 2;                /* above both halves' photos and gradients */
+  touch-action: none;
+  z-index: 2;
 }
 
-/* --- Text overlay ------------------------------------------------------- */
-/*
-  Absolutely positioned inside its half. Default: centered. Draggable via
-  app.js, which clamps it to stay within the bounds of its own half. The
-  frosted "sticker" card keeps the name/age readable over any photo.
-*/
-.cat-info {
+/* The visible black line */
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background: #000;
+  pointer-events: none;
+}
+
+/* The drag handle — W95 raised-panel style centered on the line */
+.divider::after {
+  content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 20px;
+  height: 48px;
+  background: rgba(212, 208, 200, 0.92);
+  border-top: 2px solid rgba(255, 255, 255, 0.95);
+  border-left: 2px solid rgba(255, 255, 255, 0.95);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+  border-right: 2px solid rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* --- Text overlay ------------------------------------------------------- */
+
+.cat-info {
+  position: absolute;
   z-index: 1;
   width: max-content;
-  max-width: 90%;
+  max-width: calc(90% - 24px);
   text-align: left;
-  padding: 0.45rem 0.75rem;
+  padding: 0.1rem 0.75rem 0.15rem;
   user-select: none;
-  touch-action: none;       /* let JS own all pointer movement while dragging */
+  touch-action: none;
   cursor: grab;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 1.25rem;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  background: #fff;
+  border-radius: 0;
+  /* W95 raised-button shadow */
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #dfdfdf,
+    2px 2px 0 #000;
   transition:
     box-shadow 0.15s ease,
     width 0.22s cubic-bezier(0.36, 0, 0.66, -0.56);
-  animation: card-wiggle 1.1s ease-in-out 0.5s 1;
 }
 
-/* Width is set explicitly in px by app.js (collapsed = name-only, expanded =
-   widest of name/age) so it can transition like height does; see the
-   asymmetric easing note on .cat-age below — same reasoning applies here. */
 .cat-info.expanded {
   transition:
     box-shadow 0.15s ease,
     width 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* W95 "pressed" inset when actively dragging */
 .cat-info.dragging {
   cursor: grabbing;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #dfdfdf;
+}
+
+/* Kiki's card: top-left of her half */
+.cat-half[data-cat-index="0"] .cat-info {
+  top: 12px;
+  left: 12px;
+}
+
+/* Knixie's card: bottom-right of her half */
+.cat-half[data-cat-index="1"] .cat-info {
+  bottom: 12px;
+  right: 12px;
 }
 
 .cat-name {
@@ -178,28 +190,20 @@ body {
   font-weight: 700;
   letter-spacing: 0.5px;
   white-space: nowrap;
+  color: #000;
 }
 
-/* Hidden by default; tapping the card (app.js) sets an explicit pixel
-   `height` (measured from `scrollHeight`, since the natural content height
-   varies with text length/viewport) and toggles `.expanded` on `.cat-info`.
-   Animating a literal `height` (not `max-height` or a grid-row fr track)
-   is what lets the cubic-bezier's overshoot actually render the row taller
-   than its settled height for a moment — that overshoot is the "bloop". */
+/* Hidden by default; tapping the card sets an explicit pixel height so the
+   cubic-bezier overshoot can render the "bloop" bounce in both directions. */
 .cat-age {
   height: 0;
   overflow: hidden;
   margin: 0;
   opacity: 0;
   font-size: clamp(0.9rem, 1.9vw, 1.25rem);
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
-  /* Collapsing (this is the rule applied when .expanded is removed): an
-     "easeInBack" curve (dips below 0 before rushing up to the 0 target) so
-     the shrink also bounces. A shared easeOutBack curve would only ever
-     bounce *above* its target, which is invisible on a transition heading
-     to 0 (can't render negative height) — hence the separate curve here vs.
-     the .expanded rule below. */
+  color: #000;
   transition:
     height 0.22s cubic-bezier(0.36, 0, 0.66, -0.56),
     margin 0.22s cubic-bezier(0.36, 0, 0.66, -0.56),
@@ -209,40 +213,10 @@ body {
 .cat-info.expanded .cat-age {
   margin: 0.05rem 0 0;
   opacity: 1;
-  /* Expanding: "easeOutBack" curve, overshoots above the target height for
-     the playful bloop. */
   transition:
     height 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
     margin 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.18s ease-out;
-}
-
-/* A subtle wiggle on load hints that the card can be dragged. Composed with
-   the card's own centering transform so it doesn't jump out of place;
-   plays once and settles back to normal. */
-@keyframes card-wiggle {
-  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-  15% { transform: translate(-50%, -50%) rotate(-4deg); }
-  30% { transform: translate(-50%, -50%) rotate(3deg); }
-  45% { transform: translate(-50%, -50%) rotate(-3deg); }
-  60% { transform: translate(-50%, -50%) rotate(2deg); }
-  75% { transform: translate(-50%, -50%) rotate(-1deg); }
-  90% { transform: translate(-50%, -50%) rotate(1deg); }
-}
-
-/* Per-cat text coloring, tuned for contrast on the frosted white card. */
-.cat-half[data-cat-index="0"] .cat-name {
-  color: var(--tux-dark);
-}
-.cat-half[data-cat-index="0"] .cat-age {
-  color: var(--tux-charcoal);
-}
-
-.cat-half[data-cat-index="1"] .cat-name {
-  color: var(--tabby-deep);
-}
-.cat-half[data-cat-index="1"] .cat-age {
-  color: #b15815;
 }
 
 /* --- Responsive: stack the halves vertically on narrow screens ---------- */
@@ -251,20 +225,31 @@ body {
   .split {
     flex-direction: column;
   }
-  /* divider goes horizontal when stacked, centered on the seam via the
-     same --split variable along the now-vertical main axis */
+  /* Divider goes horizontal when stacked */
   .divider {
-    top: calc(var(--split, 50%) - 7px);
-    left: 8%;
-    right: 8%;
+    top: calc(var(--split, 50%) - 10px);
+    left: 0;
+    right: 0;
     bottom: auto;
-    height: 14px;
+    height: 20px;
     width: auto;
     cursor: row-resize;
   }
+  .divider::before {
+    top: 50%;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: auto;
+    height: 2px;
+  }
+  .divider::after {
+    width: 48px;
+    height: 20px;
+  }
 }
 
-/* Respect reduced-motion for any future subtle animation */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
